@@ -10,6 +10,7 @@ The project is organized as follows:
     -   `src/lib/`: Core CLI library modules.
         -   `cli_color.zig`: Handles text coloring (standard and RGB).
         -   `cli_style.zig`: Handles text styling (bold, italic, underline).
+        -   `progress.zig`: Handles progress bar functionality.
     -   `src/main.zig`: The main application entry point and example usage of the library.
     -   `src/performance_test.zig`: Contains code for performance benchmarking of the library's features.
 -   `build.zig`: The Zig build system configuration file, defining how the project is built, tested, and run.
@@ -30,7 +31,7 @@ To run the example application (defined in `src/main.zig`):
 zig build run
 ```
 
-To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, and `src/lib/cli_style.zig`):
+To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, and `src/lib/progress.zig`):
 
 ```bash
 zig build test
@@ -61,6 +62,24 @@ This module provides functions for applying styles to text output in the termina
 -   `Style` enum: Defines text styles (e.g., `bold`, `italic`, `underline`).
 -   `styleCode(s: Style) []const u8`: Returns the ANSI escape code for a given `Style`.
 -   `printStyled(comptime fmt: []const u8, options: struct { color: cli_color.Color, style: Style }, args: anytype) !void`: Prints formatted text with a combination of color and style.
+
+### `src/lib/progress.zig`
+
+This module provides functions for creating and managing progress bars in the terminal.
+
+-   `ProgressBarConfig` struct: Configuration options for customizing progress bars.
+  - `width`: Width of the progress bar in characters (default: 40).
+  - `complete_char`: Character to use for the completed portion (default: '=').
+  - `incomplete_char`: Character to use for the incomplete portion (default: '-').
+  - `show_percentage`: Whether to show the completion percentage (default: true).
+  - `show_eta`: Whether to show the estimated time of arrival (default: true).
+  - `color`: Color of the progress bar (default: .green).
+-   `ProgressBar` struct: The main progress bar structure.
+-   `init(total: usize, config: ?ProgressBarConfig) !ProgressBar`: Creates a new progress bar with the specified total steps and optional configuration.
+-   `update(self: *ProgressBar, current: usize) !void`: Updates the progress bar to the specified step.
+-   `increment(self: *ProgressBar, amount: usize) !void`: Increments the progress bar by the specified amount.
+-   `display(self: *ProgressBar) !void`: Displays the current state of the progress bar.
+-   `finish(self: *ProgressBar) !void`: Completes the progress bar and moves to a new line.
 
 ## Adding New Features
 

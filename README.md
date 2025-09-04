@@ -7,10 +7,11 @@ A simple library for creating command-line interfaces in Zig.
 -   **Text Coloring:** Print text in different colors.
 -   **Text Styling:** Apply styles like bold, italic, and underline to text.
 -   **RGB Colors:** Use custom RGB colors for text.
+-   **Progress Bars:** Display customizable progress bars in the terminal.
 
 ## Usage
 
-To use the library, import the `cli_color.zig` and `cli_style.zig` files from the `src/lib` directory.
+To use the library, import the `cli_color.zig`, `cli_style.zig`, and `progress.zig` files from the `src/lib` directory.
 
 ### Coloring Text
 
@@ -36,6 +37,44 @@ const cli_color = @import("lib/cli_color.zig");
 try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)\n", 255, 165, 0, .{});
 ```
 
+### Progress Bars
+
+```zig
+const progress = @import("lib/progress.zig");
+
+// Create a basic progress bar
+var pb = try progress.ProgressBar.init(100, null);
+
+// Update the progress bar
+for (0..100) |i| {
+    try pb.update(i);
+    // Do some work...
+}
+
+// Finish the progress bar
+try pb.finish();
+```
+
+#### Customizing Progress Bars
+
+```zig
+const progress = @import("lib/progress.zig");
+
+// Create a custom progress bar configuration
+const config = progress.ProgressBarConfig{
+    .width = 30,
+    .complete_char = '#',
+    .incomplete_char = '.',
+    .show_percentage = true,
+    .show_eta = true,
+    .color = .magenta,
+};
+
+var pb = try progress.ProgressBar.init(50, config);
+// ... use the progress bar
+try pb.finish();
+```
+
 ## Building the Project
 
 To build the project, run:
@@ -54,4 +93,10 @@ To run the tests:
 
 ```bash
 zig build test
+```
+
+To run performance tests:
+
+```bash
+zig build perf
 ```

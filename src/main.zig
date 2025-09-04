@@ -1,6 +1,7 @@
 const std = @import("std");
 const cli_color = @import("lib/cli_color.zig");
 const cli_style = @import("lib/cli_style.zig");
+const progress = @import("lib/progress.zig");
 
 pub fn main() !void {
     // Demonstrate color printing
@@ -28,8 +29,49 @@ pub fn main() !void {
         const r = i * 25;
         const g = 255 - (i * 25);
         const b = i * 10;
-        try cli_color.printRgbColor("RGB Test {d}: ({d}, {d}, {d})\n", r, g, b, .{i, r, g, b});
+        try cli_color.printRgbColor("RGB Test {d}: ({d}, {d}, {d})\n", r, g, b, .{ i, r, g, b });
     }
+
+    // Demonstrate progress bar
+    try cli_color.printlnColor("\n--- Progress Bar Demo ---", .yellow);
+
+    // Basic progress bar
+    try cli_color.printlnColor("Basic progress bar:", .cyan);
+    var pb1 = try progress.ProgressBar.init(100, null);
+    var j: usize = 0;
+    while (j <= 100) : (j += 1) {
+        try pb1.update(j);
+        std.time.sleep(1000000 / 20); // Sleep 50ms
+    }
+    try pb1.finish();
+
+    // Custom progress bar
+    try cli_color.printlnColor("Custom progress bar:", .cyan);
+    const custom_config = progress.ProgressBarConfig{
+        .width = 30,
+        .complete_char = '#',
+        .incomplete_char = '.',
+        .show_percentage = true,
+        .show_eta = true,
+        .color = .magenta,
+    };
+    var pb2 = try progress.ProgressBar.init(50, custom_config);
+    j = 0;
+    while (j <= 50) : (j += 1) {
+        try pb2.update(j);
+        std.time.sleep(1000000 / 10); // Sleep 100ms
+    }
+    try pb2.finish();
+
+    // Progress bar with increment
+    try cli_color.printlnColor("Progress bar with increment:", .cyan);
+    var pb3 = try progress.ProgressBar.init(100, null);
+    j = 0;
+    while (j <= 100) : (j += 5) {
+        try pb3.increment(5);
+        std.time.sleep(1000000 / 4); // Sleep 250ms
+    }
+    try pb3.finish();
 }
 
 test "simple test" {
