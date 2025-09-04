@@ -33,4 +33,22 @@ pub fn build(b: *std.Build) void {
 
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_unit_tests.step);
+
+    // Performance tests
+    const perf_mod = b.createModule(.{
+        .root_source_file = b.path("src/performance_test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    perf_mod.addImport("cli_color", b.createModule(.{ .root_source_file = b.path("src/lib/cli_color.zig") }));
+    perf_mod.addImport("cli_style", b.createModule(.{ .root_source_file = b.path("src/lib/cli_style.zig") }));
+
+    const perf_exe = b.addExecutable(.{
+        .name = "performance_tests",
+        .root_module = perf_mod,
+    });
+
+    const run_perf_cmd = b.addRunArtifact(perf_exe);
+    const perf_step = b.step("perf", "Run performance tests");
+    perf_step.dependOn(&run_perf_cmd.step);
 }
