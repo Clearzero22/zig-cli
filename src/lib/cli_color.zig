@@ -85,4 +85,10 @@ test "rgb color codes" {
     try std.testing.expectEqualStrings("\x1b[38;2;255;0;0m", info1.array[0..info1.len]);
     const info2 = rgbColorCode(0, 128, 255);
     try std.testing.expectEqualStrings("\x1b[38;2;0;128;255m", info2.array[0..info2.len]);
+    const info3 = rgbColorCode(10, 20, 30);
+    try std.testing.expectEqualStrings("\x1b[38;2;10;20;30m", info3.array[0..info3.len]);
+    const info4 = rgbColorCode(255, 255, 255);
+    try std.testing.expectEqualStrings("\x1b[38;2;255;255;255m", info4.array[0..info4.len]);
+    const info5 = rgbColorCode(0, 0, 0);
+    try std.testing.expectEqualStrings("\x1b[38;2;0;0;0m", info5.array[0..info5.len]);
 }
