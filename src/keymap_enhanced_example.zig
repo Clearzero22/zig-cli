@@ -57,8 +57,7 @@ pub fn main() !void {
     const event5 = keymap.KeyEvent{ .key = .{ .char = 'z' }, .ctrl = true, .alt = false, .shift = false }; // 未注册的快捷键
 
     // 处理按键事件
-    std.debug.print("处理按键事件:
-", .{});
+    std.debug.print("处理按键事件:", .{});
     try mapper.handleKeyEvent(event1); // 应该触发回调
     try mapper.handleKeyEvent(event2); // 应该触发回调
     try mapper.handleKeyEvent(event3); // 应该触发回调

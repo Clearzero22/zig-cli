@@ -61,6 +61,30 @@ pub fn build(b: *std.Build) void {
     const keymap_enhanced_step = b.step("keymap_enhanced", "Run enhanced keymap example");
     keymap_enhanced_step.dependOn(&run_keymap_enhanced_cmd.step);
 
+    // Keyboard input test
+    const keyboard_input_test_exe = b.addExecutable(.{
+        .name = "keyboard_input_test",
+        .root_source_file = b.path("src/keyboard_input_test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    
+    const run_keyboard_input_test_cmd = b.addRunArtifact(keyboard_input_test_exe);
+    const keyboard_input_test_step = b.step("keyboard_input_test", "Run keyboard input test");
+    keyboard_input_test_step.dependOn(&run_keyboard_input_test_cmd.step);
+
+    // Advanced keyboard input test
+    const advanced_keyboard_test_exe = b.addExecutable(.{
+        .name = "advanced_keyboard_test",
+        .root_source_file = b.path("src/advanced_keyboard_test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    
+    const run_advanced_keyboard_test_cmd = b.addRunArtifact(advanced_keyboard_test_exe);
+    const advanced_keyboard_test_step = b.step("advanced_keyboard_test", "Run advanced keyboard input test");
+    advanced_keyboard_test_step.dependOn(&run_advanced_keyboard_test_cmd.step);
+
     // Keymap tests
     const keymap_test_mod = b.createModule(.{
         .root_source_file = b.path("src/lib/keymap_test.zig"),
