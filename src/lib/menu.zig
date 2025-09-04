@@ -48,6 +48,9 @@ pub const Menu = struct {
     pub fn display(self: *Menu) !void {
         const stdout = std.io.getStdOut().writer();
 
+        // 清屏并移动光标到顶部
+        try stdout.writeAll("\x1b[2J\x1b[H");
+
         // 显示提示文本
         if (self.config.color) |color| {
             try stdout.writeAll(cli_color.colorCode(color));
@@ -85,7 +88,8 @@ pub const Menu = struct {
             try stdout.writeAll(cli_color.colorCode(.reset));
         }
 
-        try stdout.writeAll("\n使用箭头键或数字键选择，按回车确认\n");
+        try stdout.writeAll("使用箭头键或数字键选择，按回车确认\n");
+        // Flush the output
     }
 
     /// 更新选中项
@@ -123,14 +127,79 @@ pub const Menu = struct {
         return self.selected_index;
     }
 
-    /// 运行菜单交互（简化版本）
-    pub fn run(self: *Menu) !usize {
+    /// 处理键盘输入
+    fn handleInput(self: *Menu) !?usize {
+        const stdin = std.io.getStdIn().reader();
+
+        // 读取一个字符
+        const char = try stdin.readByte();
+
+        switch (char) {
+            // 上箭头键 (ANSI转义序列: \x1b[A)
+            27 => {
+                // 读取接下来的两个字符
+                const next1 = try stdin.readByte();
+                const next2 = try stdin.readByte();
+
+                if (next1 == '[' and next2 == 'A') {
+                    self.moveUp();
+                    try self.display();
+                } else if (next1 == '[' and next2 == 'B') {
+                    // 下箭头键 (ANSI转义序列: \x1b[B)
+                    self.moveDown();
+                    try self.display();
+                }
+            },
+            // 回车键
+            '\r', '\n' => {
+                return self.selected_index;
+            },
+            // 数字键 1-9
+            '1'...'9' => {
+                const index = char - '1';
+                if (index < self.items.len) {
+                    try self.select(index);
+                    try self.display();
+                }
+            },
+            // q 或 Q 退出
+            'q', 'Q' => {
+                return null;
+            },
+            else => {
+                // 忽略其他输入
+            },
+        }
+
+        return undefined;
+    }
+
+    /// 运行菜单交互
+    pub fn run(self: *Menu) !?usize {
+        // 设置终端为原始模式以捕获单个按键
+        const term = try std.posix.tcgetattr(std.io.getStdIn().handle);
+        var raw_term = term;
+        raw_term.lflag.ECHO = false;
+        raw_term.lflag.ICANON = false;
+        try std.posix.tcsetattr(std.io.getStdIn().handle, .FLUSH, raw_term);
+
+        defer {
+            // 恢复终端设置
+            std.posix.tcsetattr(std.io.getStdIn().handle, .FLUSH, term) catch {};
+        }
+
         // 显示初始菜单
         try self.display();
 
-        // 在实际实现中，这里会处理键盘输入
-        // 现在我们只返回当前选中的索引
-        return self.selected_index;
+        // 循环处理输入直到用户选择或退出
+        while (true) {
+            const result = try self.handleInput();
+            if (result) |index| {
+                return index;
+            } else if (result == null) {
+                return null;
+            }
+        }
     }
 };
 

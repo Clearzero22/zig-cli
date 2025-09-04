@@ -200,7 +200,10 @@ pub fn main() !void {
 
     var basic_menu = try menu.Menu.init(std.heap.page_allocator, &menu_items, null);
 
-    _ = try basic_menu.run();
+    // 运行菜单交互（在实际应用中会等待用户输入）
+    const result = try basic_menu.run();
+    _ = result; // 在实际应用中我们会使用这个结果
+    try cli_color.printlnColor("Menu interaction completed", .green);
 }
 
 test "simple test" {
