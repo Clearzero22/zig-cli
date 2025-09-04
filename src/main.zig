@@ -4,6 +4,7 @@ const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
 const spinner = @import("lib/spinner.zig");
 const table = @import("lib/table.zig");
+const menu = @import("lib/menu.zig");
 
 pub fn main() !void {
     // Demonstrate color printing
@@ -184,6 +185,23 @@ pub fn main() !void {
     try custom_table.addRow(&[_][]const u8{ "4", "Monitor", "$299.99", "15" });
 
     try custom_table.render();
+
+    // Demonstrate menu
+    try cli_color.printlnColor("\n--- Menu Demo ---", .yellow);
+
+    // Basic menu
+    try cli_color.printlnColor("Basic menu:", .cyan);
+    const menu_items = [_]menu.MenuItem{
+        menu.MenuItem{ .text = "查看文件" },
+        menu.MenuItem{ .text = "编辑配置" },
+        menu.MenuItem{ .text = "系统信息" },
+        menu.MenuItem{ .text = "退出程序" },
+    };
+
+    var basic_menu = try menu.Menu.init(std.heap.page_allocator, &menu_items, null);
+
+    const selected_index = try basic_menu.run();
+    try cli_color.printlnColor("Selected option: {d}", .green, .{selected_index});
 }
 
 test "simple test" {

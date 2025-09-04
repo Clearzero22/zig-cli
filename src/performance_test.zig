@@ -4,6 +4,7 @@ const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
 const spinner = @import("lib/spinner.zig");
 const table = @import("lib/table.zig");
+const menu = @import("lib/menu.zig");
 
 pub fn runPerformanceTests() !void {
     const stdout = std.io.getStdOut().writer();
@@ -93,6 +94,30 @@ pub fn runPerformanceTests() !void {
 
     const elapsed_table = timer_table.read();
     try stdout.print("Time to process {d} table operations: {d} ns\n", .{ table_count, elapsed_table });
+
+    // Performance test for menu
+    try stdout.print("Performance test for menu:\n", .{});
+    const menu_items = [_]menu.MenuItem{
+        menu.MenuItem{ .text = "Option 1" },
+        menu.MenuItem{ .text = "Option 2" },
+        menu.MenuItem{ .text = "Option 3" },
+    };
+
+    var m = try menu.Menu.init(std.heap.page_allocator, &menu_items, null);
+    defer _ = m;
+
+    var timer_menu = try std.time.Timer.start();
+
+    // Test menu operations
+    const menu_count = 1000;
+    for (0..menu_count) |_| {
+        m.moveDown();
+        m.moveUp();
+        _ = m.getSelected();
+    }
+
+    const elapsed_menu = timer_menu.read();
+    try stdout.print("Time to process {d} menu operations: {d} ns\n", .{ menu_count, elapsed_menu });
 }
 
 pub fn main() !void {

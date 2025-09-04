@@ -10,10 +10,11 @@ A simple library for creating command-line interfaces in Zig.
 -   **Progress Bars:** Display customizable progress bars in the terminal.
 -   **Spinners:** Display animated loading indicators in the terminal.
 -   **Tables:** Display structured data in tabular format in the terminal.
+-   **Menus:** Interactive menu system for user selections.
 
 ## Usage
 
-To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, `spinner.zig`, and `table.zig` files from the `src/lib` directory.
+To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, `spinner.zig`, `table.zig`, and `menu.zig` files from the `src/lib` directory.
 
 ### Coloring Text
 
@@ -182,6 +183,56 @@ try t.addRow(&[_][]const u8{ "2", "Mouse", "$29.99" });
 
 // Render the table
 try t.render();
+```
+
+### Menus
+
+```zig
+const menu = @import("lib/menu.zig");
+
+// Define menu items
+const items = [_]menu.MenuItem{
+    menu.MenuItem{ .text = "View Files" },
+    menu.MenuItem{ .text = "Edit Configuration" },
+    menu.MenuItem{ .text = "System Information" },
+    menu.MenuItem{ .text = "Exit" },
+};
+
+// Create a menu
+var m = try menu.Menu.init(allocator, &items, null);
+defer _ = m;
+
+// Run the menu (this would normally handle user input)
+const selected_index = try m.run();
+```
+
+#### Customizing Menus
+
+```zig
+const menu = @import("lib/menu.zig");
+
+// Define menu items
+const items = [_]menu.MenuItem{
+    menu.MenuItem{ .text = "Yes" },
+    menu.MenuItem{ .text = "No" },
+    menu.MenuItem{ .text = "Cancel", .disabled = true },
+};
+
+// Create a custom menu configuration
+const config = menu.MenuConfig{
+    .prompt = "Please select an option:",
+    .enable_number_keys = true,
+    .enable_arrow_keys = true,
+    .cycle_navigation = false,
+    .color = .blue,
+    .selected_color = .yellow,
+};
+
+var m = try menu.Menu.init(allocator, &items, config);
+defer _ = m;
+
+// Run the menu
+const selected_index = try m.run();
 ```
 
 ## Building the Project

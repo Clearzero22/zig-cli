@@ -13,6 +13,7 @@ The project is organized as follows:
         -   `progress.zig`: Handles progress bar functionality.
         -   `spinner.zig`: Handles spinner functionality.
         -   `table.zig`: Handles table display functionality.
+        -   `menu.zig`: Handles menu selection functionality.
     -   `src/main.zig`: The main application entry point and example usage of the library.
     -   `src/performance_test.zig`: Contains code for performance benchmarking of the library's features.
 -   `build.zig`: The Zig build system configuration file, defining how the project is built, tested, and run.
@@ -33,7 +34,7 @@ To run the example application (defined in `src/main.zig`):
 zig build run
 ```
 
-To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, `src/lib/progress.zig`, `src/lib/spinner.zig`, and `src/lib/table.zig`):
+To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, `src/lib/progress.zig`, `src/lib/spinner.zig`, `src/lib/table.zig`, and `src/lib/menu.zig`):
 
 ```bash
 zig build test
@@ -121,6 +122,31 @@ This module provides functions for creating and displaying tabular data in the t
 -   `addRow(self: *Table, row: []const []const u8) !void`: Adds a row of data to the table.
 -   `render(self: *Table) !void`: Renders and displays the table.
 -   `deinit(self: *Table) void`: Frees allocated resources.
+
+### `src/lib/menu.zig`
+
+This module provides functions for creating and managing interactive menus in the terminal.
+
+-   `MenuConfig` struct: Configuration options for customizing menus.
+  - `prompt`: Prompt text to display above the menu (default: "请选择一个选项:").
+  - `enable_number_keys`: Whether to enable number key selection (default: true).
+  - `enable_arrow_keys`: Whether to enable arrow key navigation (default: true).
+  - `cycle_navigation`: Whether to cycle navigation (default: true).
+  - `color`: Color of the menu (default: .cyan).
+  - `selected_color`: Color of the selected item (default: .green).
+-   `MenuItem` struct: Represents a menu item.
+  - `text`: The text to display for the menu item.
+  - `value`: Optional value associated with the menu item.
+  - `disabled`: Whether the menu item is disabled.
+-   `Menu` struct: The main menu structure.
+-   `init(allocator: std.mem.Allocator, items: []const MenuItem, config: ?MenuConfig) !Menu`: Creates a new menu with the specified items and optional configuration.
+-   `display(self: *Menu) !void`: Displays the menu.
+-   `select(self: *Menu, index: usize) !void`: Selects the item at the specified index.
+-   `moveUp(self: *Menu) void`: Moves the selection up.
+-   `moveDown(self: *Menu) void`: Moves the selection down.
+-   `getSelected(self: *Menu) MenuItem`: Returns the currently selected menu item.
+-   `getSelectedIndex(self: *Menu) usize`: Returns the index of the currently selected item.
+-   `run(self: *Menu) !usize`: Runs the menu interaction and returns the selected index.
 
 ## Adding New Features
 
