@@ -12,6 +12,7 @@ The project is organized as follows:
         -   `cli_style.zig`: Handles text styling (bold, italic, underline).
         -   `progress.zig`: Handles progress bar functionality.
         -   `spinner.zig`: Handles spinner functionality.
+        -   `table.zig`: Handles table display functionality.
     -   `src/main.zig`: The main application entry point and example usage of the library.
     -   `src/performance_test.zig`: Contains code for performance benchmarking of the library's features.
 -   `build.zig`: The Zig build system configuration file, defining how the project is built, tested, and run.
@@ -32,7 +33,7 @@ To run the example application (defined in `src/main.zig`):
 zig build run
 ```
 
-To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, `src/lib/progress.zig`, and `src/lib/spinner.zig`):
+To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, `src/lib/progress.zig`, `src/lib/spinner.zig`, and `src/lib/table.zig`):
 
 ```bash
 zig build test
@@ -97,6 +98,29 @@ This module provides functions for creating and managing animated loading indica
 -   `display(self: *Spinner) !void`: Displays the current frame of the spinner.
 -   `stop(self: *Spinner, success_message: ?[]const u8) !void`: Stops the spinner and displays a success message.
 -   `stopWithError(self: *Spinner, error_message: ?[]const u8) !void`: Stops the spinner and displays an error message.
+
+### `src/lib/table.zig`
+
+This module provides functions for creating and displaying tabular data in the terminal.
+
+-   `TableConfig` struct: Configuration options for customizing tables.
+  - `show_header`: Whether to display the table header (default: true).
+  - `column_separator`: String to use as column separator (default: " | ").
+  - `row_separator`: String to use as row separator (default: "-").
+  - `show_border`: Whether to display table borders (default: true).
+  - `header_color`: Color of the table header (default: .blue).
+  - `table_color`: Color of the table content (default: null).
+-   `ColumnConfig` struct: Configuration options for table columns.
+  - `header`: Column header text.
+  - `alignment`: Text alignment (left, center, right).
+  - `min_width`: Minimum column width.
+  - `max_width`: Maximum column width (0 for no limit).
+  - `color`: Color of the column content.
+-   `Table` struct: The main table structure.
+-   `init(allocator: std.mem.Allocator, columns: []const ColumnConfig, config: ?TableConfig) !Table`: Creates a new table with the specified columns and optional configuration.
+-   `addRow(self: *Table, row: []const []const u8) !void`: Adds a row of data to the table.
+-   `render(self: *Table) !void`: Renders and displays the table.
+-   `deinit(self: *Table) void`: Frees allocated resources.
 
 ## Adding New Features
 

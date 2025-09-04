@@ -9,10 +9,11 @@ A simple library for creating command-line interfaces in Zig.
 -   **RGB Colors:** Use custom RGB colors for text.
 -   **Progress Bars:** Display customizable progress bars in the terminal.
 -   **Spinners:** Display animated loading indicators in the terminal.
+-   **Tables:** Display structured data in tabular format in the terminal.
 
 ## Usage
 
-To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, and `spinner.zig` files from the `src/lib` directory.
+To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, `spinner.zig`, and `table.zig` files from the `src/lib` directory.
 
 ### Coloring Text
 
@@ -126,6 +127,61 @@ try s.start();
 
 // Stop the spinner with error message
 try s.stopWithError("Connection failed!");
+```
+
+### Tables
+
+```zig
+const table = @import("lib/table.zig");
+
+// Define table columns
+const columns = [_]table.ColumnConfig{
+    table.ColumnConfig{ .header = "Name", .alignment = .left },
+    table.ColumnConfig{ .header = "Age", .alignment = .right },
+    table.ColumnConfig{ .header = "City", .alignment = .left },
+};
+
+// Create a table
+var t = try table.Table.init(allocator, &columns, null);
+defer t.deinit();
+
+// Add rows
+try t.addRow(&[_][]const u8{ "Alice", "25", "New York" });
+try t.addRow(&[_][]const u8{ "Bob", "30", "San Francisco" });
+
+// Render the table
+try t.render();
+```
+
+#### Customizing Tables
+
+```zig
+const table = @import("lib/table.zig");
+
+// Define table columns with custom styling
+const columns = [_]table.ColumnConfig{
+    table.ColumnConfig{ .header = "ID", .alignment = .right, .color = .green },
+    table.ColumnConfig{ .header = "Product", .alignment = .left, .min_width = 15 },
+    table.ColumnConfig{ .header = "Price", .alignment = .right, .color = .yellow, .min_width = 10 },
+};
+
+// Create a custom table configuration
+const config = table.TableConfig{
+    .show_header = true,
+    .header_color = .blue,
+    .table_color = .cyan,
+    .show_border = true,
+};
+
+var t = try table.Table.init(allocator, &columns, config);
+defer t.deinit();
+
+// Add rows
+try t.addRow(&[_][]const u8{ "1", "Laptop", "$999.99" });
+try t.addRow(&[_][]const u8{ "2", "Mouse", "$29.99" });
+
+// Render the table
+try t.render();
 ```
 
 ## Building the Project

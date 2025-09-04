@@ -3,6 +3,7 @@ const cli_color = @import("lib/cli_color.zig");
 const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
 const spinner = @import("lib/spinner.zig");
+const table = @import("lib/table.zig");
 
 pub fn runPerformanceTests() !void {
     const stdout = std.io.getStdOut().writer();
@@ -63,6 +64,34 @@ pub fn runPerformanceTests() !void {
     const elapsed_spinner = timer_spinner.read();
     try s.stop("Test complete!"); // Just stop once at the end
     try stdout.print("Time to process {d} spinner steps: {d} ns\n", .{ spin_count, elapsed_spinner });
+
+    // Performance test for table
+    try stdout.print("Performance test for table:\n", .{});
+    const columns = [_]table.ColumnConfig{
+        table.ColumnConfig{ .header = "Name", .alignment = .left },
+        table.ColumnConfig{ .header = "Age", .alignment = .right },
+        table.ColumnConfig{ .header = "City", .alignment = .left },
+    };
+
+    var t = try table.Table.init(std.heap.page_allocator, &columns, null);
+    defer t.deinit();
+
+    // Add test data
+    try t.addRow(&[_][]const u8{ "Alice", "25", "New York" });
+    try t.addRow(&[_][]const u8{ "Bob", "30", "San Francisco" });
+    try t.addRow(&[_][]const u8{ "Charlie", "35", "London" });
+
+    var timer_table = try std.time.Timer.start();
+
+    // We don't actually render the table in the performance test
+    // to avoid terminal I/O overhead skewing the results
+    const table_count = 1000;
+    for (0..table_count) |_| {
+        _ = t;
+    }
+
+    const elapsed_table = timer_table.read();
+    try stdout.print("Time to process {d} table operations: {d} ns\n", .{ table_count, elapsed_table });
 }
 
 pub fn main() !void {

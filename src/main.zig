@@ -3,6 +3,7 @@ const cli_color = @import("lib/cli_color.zig");
 const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
 const spinner = @import("lib/spinner.zig");
+const table = @import("lib/table.zig");
 
 pub fn main() !void {
     // Demonstrate color printing
@@ -48,7 +49,7 @@ pub fn main() !void {
 
     // Custom progress bar
     try cli_color.printlnColor("Custom progress bar:", .cyan);
-    const custom_config = progress.ProgressBarConfig{
+    const progress_config = progress.ProgressBarConfig{
         .width = 30,
         .complete_char = '#',
         .incomplete_char = '.',
@@ -56,7 +57,7 @@ pub fn main() !void {
         .show_eta = true,
         .color = .magenta,
     };
-    var pb2 = try progress.ProgressBar.init(50, custom_config);
+    var pb2 = try progress.ProgressBar.init(50, progress_config);
     j = 0;
     while (j <= 50) : (j += 1) {
         try pb2.update(j);
@@ -97,8 +98,7 @@ pub fn main() !void {
     }
     try pb4.finish();
 
-    // Demonstrate spinner
-    try cli_color.printlnColor("\n--- Spinner Demo ---", .yellow);
+    // Demonstrate spinner\n    try cli_color.printlnColor(\"\\n--- Spinner Demo ---\", .yellow);
 
     // Basic spinner
     try cli_color.printlnColor("Basic spinner:", .cyan);
@@ -137,6 +137,53 @@ pub fn main() !void {
         std.time.sleep(1000000 * 2); // Sleep 2s
     }
     try s3.stopWithError("Connection failed!");
+
+    // Demonstrate table
+    try cli_color.printlnColor("\n--- Table Demo ---", .yellow);
+
+    // Basic table
+    try cli_color.printlnColor("Basic table:", .cyan);
+    const basic_columns = [_]table.ColumnConfig{
+        table.ColumnConfig{ .header = "Name", .alignment = .left },
+        table.ColumnConfig{ .header = "Age", .alignment = .right },
+        table.ColumnConfig{ .header = "City", .alignment = .left },
+    };
+
+    var basic_table = try table.Table.init(std.heap.page_allocator, &basic_columns, null);
+    defer basic_table.deinit();
+
+    try basic_table.addRow(&[_][]const u8{ "Alice", "25", "New York" });
+    try basic_table.addRow(&[_][]const u8{ "Bob", "30", "San Francisco" });
+    try basic_table.addRow(&[_][]const u8{ "Charlie", "35", "London" });
+    try basic_table.addRow(&[_][]const u8{ "Diana", "28", "Paris" });
+
+    try basic_table.render();
+
+    // Custom table with colors and alignment
+    try cli_color.printlnColor("Custom table with colors:", .cyan);
+    const custom_columns = [_]table.ColumnConfig{
+        table.ColumnConfig{ .header = "ID", .alignment = .right, .color = .green },
+        table.ColumnConfig{ .header = "Product", .alignment = .left, .min_width = 15 },
+        table.ColumnConfig{ .header = "Price", .alignment = .right, .color = .yellow, .min_width = 10 },
+        table.ColumnConfig{ .header = "Stock", .alignment = .center, .color = .magenta },
+    };
+
+    const custom_config = table.TableConfig{
+        .show_header = true,
+        .header_color = .blue,
+        .table_color = .cyan,
+        .show_border = true,
+    };
+
+    var custom_table = try table.Table.init(std.heap.page_allocator, &custom_columns, custom_config);
+    defer custom_table.deinit();
+
+    try custom_table.addRow(&[_][]const u8{ "1", "Laptop", "$999.99", "5" });
+    try custom_table.addRow(&[_][]const u8{ "2", "Mouse", "$29.99", "50" });
+    try custom_table.addRow(&[_][]const u8{ "3", "Keyboard", "$79.99", "25" });
+    try custom_table.addRow(&[_][]const u8{ "4", "Monitor", "$299.99", "15" });
+
+    try custom_table.render();
 }
 
 test "simple test" {

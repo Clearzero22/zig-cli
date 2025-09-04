@@ -44,6 +44,7 @@ pub fn build(b: *std.Build) void {
     perf_mod.addImport("cli_style", b.createModule(.{ .root_source_file = b.path("src/lib/cli_style.zig") }));
     perf_mod.addImport("progress", b.createModule(.{ .root_source_file = b.path("src/lib/progress.zig") }));
     perf_mod.addImport("spinner", b.createModule(.{ .root_source_file = b.path("src/lib/spinner.zig") }));
+    perf_mod.addImport("table", b.createModule(.{ .root_source_file = b.path("src/lib/table.zig") }));
 
     const perf_exe = b.addExecutable(.{
         .name = "performance_tests",
