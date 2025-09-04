@@ -11,10 +11,11 @@ A simple library for creating command-line interfaces in Zig.
 -   **Spinners:** Display animated loading indicators in the terminal.
 -   **Tables:** Display structured data in tabular format in the terminal.
 -   **Menus:** Interactive menu system for user selections.
+-   **Key Mapping:** Define and handle keyboard shortcuts.
 
 ## Usage
 
-To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, `spinner.zig`, `table.zig`, and `menu.zig` files from the `src/lib` directory.
+To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, `spinner.zig`, `table.zig`, `menu.zig`, and `keymap.zig` files from the `src/lib` directory.
 
 ### Coloring Text
 
@@ -139,7 +140,7 @@ const table = @import("lib/table.zig");
 const columns = [_]table.ColumnConfig{
     table.ColumnConfig{ .header = "Name", .alignment = .left },
     table.ColumnConfig{ .header = "Age", .alignment = .right },
-    table.ColumnConfig{ .header = "City", .alignment = .left },
+    .header = "City", .alignment = .left },
 };
 
 // Create a table
@@ -235,6 +236,30 @@ defer _ = m;
 const selected_index = try m.run();
 ```
 
+### Key Mapping
+
+```zig
+const keymap = @import("lib/keymap.zig");
+
+// Define a callback function
+fn myCallback(event: keymap.KeyEvent) anyerror!void {
+    std.debug.print("Shortcut triggered: {s}, Ctrl: {}, Alt: {}, Shift: {}\n", .{
+        event.key, event.ctrl, event.alt, event.shift,
+    });
+}
+
+// Create a key mapper
+var mapper = keymap.KeyMapper.init(allocator);
+defer mapper.deinit();
+
+// Add a key mapping
+try mapper.addMapping("c", true, false, false, myCallback); // Ctrl+C
+
+// Create and handle a key event
+var event = keymap.KeyEvent{ .key = "c", .ctrl = true, .alt = false, .shift = false };
+try mapper.handleKeyEvent(event);
+```
+
 ## Building the Project
 
 To build the project, run:
@@ -247,6 +272,12 @@ To run the example application:
 
 ```bash
 zig build run
+```
+
+To run the keymap example:
+
+```bash
+zig build keymap
 ```
 
 To run the tests:
