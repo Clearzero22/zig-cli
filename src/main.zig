@@ -2,6 +2,7 @@ const std = @import("std");
 const cli_color = @import("lib/cli_color.zig");
 const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
+const spinner = @import("lib/spinner.zig");
 
 pub fn main() !void {
     // Demonstrate color printing
@@ -59,7 +60,7 @@ pub fn main() !void {
     j = 0;
     while (j <= 50) : (j += 1) {
         try pb2.update(j);
-        std.time.sleep(1000000000 / 2); // Sleep 500ms
+        std.time.sleep(10000000 / 2); // Sleep 500ms
     }
     try pb2.finish();
 
@@ -95,6 +96,47 @@ pub fn main() !void {
         std.time.sleep(1000000 * 2); // Sleep 2s
     }
     try pb4.finish();
+
+    // Demonstrate spinner
+    try cli_color.printlnColor("\n--- Spinner Demo ---", .yellow);
+
+    // Basic spinner
+    try cli_color.printlnColor("Basic spinner:", .cyan);
+    var s1 = try spinner.Spinner.init("Loading...", null);
+    try s1.start();
+    var k: usize = 0;
+    while (k < 20) : (k += 1) {
+        try s1.update();
+        std.time.sleep(100000000 * 2); // Sleep 2s
+    }
+    try s1.stop("Loading complete!");
+
+    // Custom spinner
+    try cli_color.printlnColor("Custom spinner:", .cyan);
+    const custom_spinner_config = spinner.SpinnerConfig{
+        .frames = &.{ "|", "/", "-", "\\" },
+        .interval = 200000,
+        .color = .yellow,
+    };
+    var s2 = try spinner.Spinner.init("Processing files...", custom_spinner_config);
+    try s2.start();
+    k = 0;
+    while (k < 20) : (k += 1) {
+        try s2.update();
+        std.time.sleep(1000000 * 2); // Sleep 2s
+    }
+    try s2.stop("Processing finished!");
+
+    // Error spinner
+    try cli_color.printlnColor("Error spinner:", .cyan);
+    var s3 = try spinner.Spinner.init("Connecting to server...", null);
+    try s3.start();
+    k = 0;
+    while (k < 10) : (k += 1) {
+        try s3.update();
+        std.time.sleep(1000000 * 2); // Sleep 2s
+    }
+    try s3.stopWithError("Connection failed!");
 }
 
 test "simple test" {

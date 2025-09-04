@@ -11,6 +11,7 @@ The project is organized as follows:
         -   `cli_color.zig`: Handles text coloring (standard and RGB).
         -   `cli_style.zig`: Handles text styling (bold, italic, underline).
         -   `progress.zig`: Handles progress bar functionality.
+        -   `spinner.zig`: Handles spinner functionality.
     -   `src/main.zig`: The main application entry point and example usage of the library.
     -   `src/performance_test.zig`: Contains code for performance benchmarking of the library's features.
 -   `build.zig`: The Zig build system configuration file, defining how the project is built, tested, and run.
@@ -31,7 +32,7 @@ To run the example application (defined in `src/main.zig`):
 zig build run
 ```
 
-To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, and `src/lib/progress.zig`):
+To run the unit tests (defined in `src/main.zig`, `src/lib/cli_color.zig`, `src/lib/cli_style.zig`, `src/lib/progress.zig`, and `src/lib/spinner.zig`):
 
 ```bash
 zig build test
@@ -80,6 +81,22 @@ This module provides functions for creating and managing progress bars in the te
 -   `increment(self: *ProgressBar, amount: usize) !void`: Increments the progress bar by the specified amount.
 -   `display(self: *ProgressBar) !void`: Displays the current state of the progress bar.
 -   `finish(self: *ProgressBar) !void`: Completes the progress bar and moves to a new line.
+
+### `src/lib/spinner.zig`
+
+This module provides functions for creating and managing animated loading indicators in the terminal.
+
+-   `SpinnerConfig` struct: Configuration options for customizing spinners.
+  - `frames`: Array of characters to use for the animation frames (default: braille characters).
+  - `interval`: Update interval in microseconds (default: 100000).
+  - `color`: Color of the spinner (default: .cyan).
+-   `Spinner` struct: The main spinner structure.
+-   `init(message: []const u8, config: ?SpinnerConfig) !Spinner`: Creates a new spinner with the specified message and optional configuration.
+-   `start(self: *Spinner) !void`: Starts the spinner animation.
+-   `update(self: *Spinner) !void`: Updates the spinner to the next frame.
+-   `display(self: *Spinner) !void`: Displays the current frame of the spinner.
+-   `stop(self: *Spinner, success_message: ?[]const u8) !void`: Stops the spinner and displays a success message.
+-   `stopWithError(self: *Spinner, error_message: ?[]const u8) !void`: Stops the spinner and displays an error message.
 
 ## Adding New Features
 

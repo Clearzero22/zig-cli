@@ -8,10 +8,11 @@ A simple library for creating command-line interfaces in Zig.
 -   **Text Styling:** Apply styles like bold, italic, and underline to text.
 -   **RGB Colors:** Use custom RGB colors for text.
 -   **Progress Bars:** Display customizable progress bars in the terminal.
+-   **Spinners:** Display animated loading indicators in the terminal.
 
 ## Usage
 
-To use the library, import the `cli_color.zig`, `cli_style.zig`, and `progress.zig` files from the `src/lib` directory.
+To use the library, import the `cli_color.zig`, `cli_style.zig`, `progress.zig`, and `spinner.zig` files from the `src/lib` directory.
 
 ### Coloring Text
 
@@ -73,6 +74,58 @@ const config = progress.ProgressBarConfig{
 var pb = try progress.ProgressBar.init(50, config);
 // ... use the progress bar
 try pb.finish();
+```
+
+### Spinners
+
+```zig
+const spinner = @import("lib/spinner.zig");
+
+// Create a basic spinner
+var s = try spinner.Spinner.init("Loading...", null);
+
+// Start the spinner
+try s.start();
+
+// Update the spinner (usually in a loop)
+for (0..10) |_| {
+    try s.update();
+    // Do some work...
+}
+
+// Stop the spinner with success message
+try s.stop("Loading complete!");
+```
+
+#### Customizing Spinners
+
+```zig
+const spinner = @import("lib/spinner.zig");
+
+// Create a custom spinner configuration
+const config = spinner.SpinnerConfig{
+    .frames = &.{ "|", "/", "-", "\\" },
+    .interval = 200000,
+    .color = .yellow,
+};
+
+var s = try spinner.Spinner.init("Processing...", config);
+// ... use the spinner
+try s.stop("Processing finished!");
+```
+
+#### Error Spinners
+
+```zig
+const spinner = @import("lib/spinner.zig");
+
+var s = try spinner.Spinner.init("Connecting...", null);
+try s.start();
+
+// ... do some work ...
+
+// Stop the spinner with error message
+try s.stopWithError("Connection failed!");
 ```
 
 ## Building the Project

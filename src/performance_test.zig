@@ -2,6 +2,7 @@ const std = @import("std");
 const cli_color = @import("lib/cli_color.zig");
 const cli_style = @import("lib/cli_style.zig");
 const progress = @import("lib/progress.zig");
+const spinner = @import("lib/spinner.zig");
 
 pub fn runPerformanceTests() !void {
     const stdout = std.io.getStdOut().writer();
@@ -46,6 +47,22 @@ pub fn runPerformanceTests() !void {
     const elapsed_progress = timer_progress.read();
     try pb.finish(); // Just finish once at the end
     try stdout.print("Time to process {d} progress steps: {d} ns\n", .{ total_steps, elapsed_progress });
+
+    // Performance test for spinner
+    try stdout.print("Performance test for spinner:\n", .{});
+    var s = try spinner.Spinner.init("Testing...", null);
+    var timer_spinner = try std.time.Timer.start();
+
+    const spin_count = 1000;
+    for (0..spin_count) |_| {
+        // We don't actually update the display for each step in the performance test
+        // to avoid terminal I/O overhead skewing the results
+        s.current_frame = (s.current_frame + 1) % s.config.frames.len;
+    }
+
+    const elapsed_spinner = timer_spinner.read();
+    try s.stop("Test complete!"); // Just stop once at the end
+    try stdout.print("Time to process {d} spinner steps: {d} ns\n", .{ spin_count, elapsed_spinner });
 }
 
 pub fn main() !void {
