@@ -200,8 +200,7 @@ pub fn main() !void {
 
     var basic_menu = try menu.Menu.init(std.heap.page_allocator, &menu_items, null);
 
-    const selected_index = try basic_menu.run();
-    try cli_color.printlnColor("Selected option: {d}", .green, .{selected_index});
+    _ = try basic_menu.run();
 }
 
 test "simple test" {
