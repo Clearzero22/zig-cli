@@ -6,6 +6,7 @@ A simple library for creating command-line interfaces in Zig.
 
 -   **Text Coloring:** Print text in different colors.
 -   **Text Styling:** Apply styles like bold, italic, and underline to text.
+-   **RGB Colors:** Use custom RGB colors for text.
 
 ## Usage
 
@@ -27,6 +28,14 @@ const cli_style = @import("lib/cli_style.zig");
 try cli_style.printStyled("This is bold blue text\n", .{ .color = .blue, .style = .bold }, .{});
 ```
 
+### RGB Colors
+
+```zig
+const cli_color = @import("lib/cli_color.zig");
+
+try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)\n", 255, 165, 0, .{});
+```
+
 ## Building the Project
 
 To build the project, run:
@@ -46,4 +55,3 @@ To run the tests:
 ```bash
 zig build test
 ```
-

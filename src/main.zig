@@ -17,6 +17,10 @@ pub fn main() !void {
     const name = "Zig";
     const version = "0.15.0";
     try cli_style.printStyled("Welcome to {s} v{s}\n", .{ .color = .magenta, .style = .bold }, .{ name, version });
+
+    // Demonstrate RGB color printing
+    try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)\n", 255, 165, 0, .{});
+    try cli_color.printRgbColor("Another RGB color (128, 0, 128) with number {d}\n", 128, 0, 128, .{123});
 }
 
 test "simple test" {
