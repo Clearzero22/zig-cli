@@ -87,7 +87,8 @@ pub fn runPerformanceTests() !void {
     // to avoid terminal I/O overhead skewing the results
     const table_count = 1000;
     for (0..table_count) |_| {
-        _ = t;
+        // Just reference the table to avoid unused variable error
+        _ = &t;
     }
 
     const elapsed_table = timer_table.read();

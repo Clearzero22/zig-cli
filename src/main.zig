@@ -98,8 +98,8 @@ pub fn main() !void {
     }
     try pb4.finish();
 
-    // Demonstrate spinner\n    try cli_color.printlnColor(\"\\n--- Spinner Demo ---\", .yellow);
-
+    // Demonstrate spinner
+    try cli_color.printlnColor("\n--- Spinner Demo ---", .yellow);
     // Basic spinner
     try cli_color.printlnColor("Basic spinner:", .cyan);
     var s1 = try spinner.Spinner.init("Loading...", null);
