@@ -33,13 +33,16 @@ pub fn colorCode(c: Color) []const u8 {
 
 // 带颜色输出字符串 - 修复版本
 pub fn printColor(comptime fmt: []const u8, color: Color, args: anytype) !void {
-    // 正确构建包含颜色代码的格式化字符串和参数列表
-    const full_fmt = colorCode(color) ++ fmt ++ colorCode(.reset);
-    try std.io.getStdOut().writer().print(full_fmt, args);
+    var buf: [1024]u8 = undefined;
+    const formatted_str = try std.fmt.bufPrint(&buf, fmt, args);
+    try std.io.getStdOut().writer().print("{s}{s}{s}", .{
+        colorCode(color),
+        formatted_str,
+        colorCode(.reset),
+    });
 }
 
 // 简化的无参数彩色打印
 pub fn printlnColor(text: []const u8, color: Color) !void {
     try printColor("{s}\n", color, .{text});
 }
-    
