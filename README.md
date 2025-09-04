@@ -30,7 +30,8 @@ try cli_color.printlnColor("This is red text", .red);
 ```zig
 const cli_style = @import("lib/cli_style.zig");
 
-try cli_style.printStyled("This is bold blue text\n", .{ .color = .blue, .style = .bold }, .{});
+try cli_style.printStyled("This is bold blue text
+", .{ .color = .blue, .style = .bold }, .{});
 ```
 
 ### RGB Colors
@@ -38,7 +39,8 @@ try cli_style.printStyled("This is bold blue text\n", .{ .color = .blue, .style 
 ```zig
 const cli_color = @import("lib/cli_color.zig");
 
-try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)\n", 255, 165, 0, .{});
+try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)
+", 255, 165, 0, .{});
 ```
 
 ### Progress Bars
@@ -107,7 +109,7 @@ const spinner = @import("lib/spinner.zig");
 
 // Create a custom spinner configuration
 const config = spinner.SpinnerConfig{
-    .frames = &.{ "|", "/", "-", "\\" },
+    .frames = &.{ "|", "/", "-", "" },
     .interval = 200000,
     .color = .yellow,
 };
@@ -140,7 +142,7 @@ const table = @import("lib/table.zig");
 const columns = [_]table.ColumnConfig{
     table.ColumnConfig{ .header = "Name", .alignment = .left },
     table.ColumnConfig{ .header = "Age", .alignment = .right },
-    .header = "City", .alignment = .left },
+    table.ColumnConfig{ .header = "City", .alignment = .left },
 };
 
 // Create a table
@@ -243,7 +245,8 @@ const keymap = @import("lib/keymap.zig");
 
 // Define a callback function
 fn myCallback(event: keymap.KeyEvent) anyerror!void {
-    std.debug.print("Shortcut triggered: {s}, Ctrl: {}, Alt: {}, Shift: {}\n", .{
+    std.debug.print("Shortcut triggered: {s}, Ctrl: {}, Alt: {}, Shift: {}
+", .{
         event.key, event.ctrl, event.alt, event.shift,
     });
 }
@@ -258,6 +261,63 @@ try mapper.addMapping("c", true, false, false, myCallback); // Ctrl+C
 // Create and handle a key event
 var event = keymap.KeyEvent{ .key = "c", .ctrl = true, .alt = false, .shift = false };
 try mapper.handleKeyEvent(event);
+```
+
+### Enhanced Key Mapping
+
+The library also provides an enhanced key mapping module that supports a wider range of keys:
+
+```zig
+const keymap = @import("lib/keymap_enhanced.zig");
+
+// Define a callback function
+fn myCallback(event: keymap.KeyEvent) anyerror!void {
+    // Handle different key types
+    switch (event.key) {
+        .char => |c| {
+            std.debug.print("Character key '{c}' triggered, Ctrl: {}, Alt: {}, Shift: {}
+", .{
+                c, event.ctrl, event.alt, event.shift,
+            });
+        },
+        .f1 => {
+            std.debug.print("F1 key triggered, Ctrl: {}, Alt: {}, Shift: {}
+", .{
+                event.ctrl, event.alt, event.shift,
+            });
+        },
+        .up => {
+            std.debug.print("Up arrow key triggered, Ctrl: {}, Alt: {}, Shift: {}
+", .{
+                event.ctrl, event.alt, event.shift,
+            });
+        },
+        else => {
+            std.debug.print("Other key triggered, Ctrl: {}, Alt: {}, Shift: {}
+", .{
+                event.ctrl, event.alt, event.shift,
+            });
+        },
+    }
+}
+
+// Create a key mapper
+var mapper = keymap.KeyMapper.init(allocator);
+defer mapper.deinit();
+
+// Add key mappings for different key types
+try mapper.addMapping(.{ .char = 'c' }, true, false, false, myCallback); // Ctrl+C
+try mapper.addMapping(.f1, false, false, false, myCallback); // F1
+try mapper.addMapping(.up, false, false, false, myCallback); // Up arrow
+
+// Create and handle key events
+const event1 = keymap.KeyEvent{ .key = .{ .char = 'c' }, .ctrl = true, .alt = false, .shift = false };
+const event2 = keymap.KeyEvent{ .key = .f1, .ctrl = false, .alt = false, .shift = false };
+const event3 = keymap.KeyEvent{ .key = .up, .ctrl = false, .alt = false, .shift = false };
+
+try mapper.handleKeyEvent(event1);
+try mapper.handleKeyEvent(event2);
+try mapper.handleKeyEvent(event3);
 ```
 
 ## Building the Project
@@ -278,6 +338,12 @@ To run the keymap example:
 
 ```bash
 zig build keymap
+```
+
+To run the enhanced keymap example:
+
+```bash
+zig build keymap_enhanced
 ```
 
 To run the tests:
