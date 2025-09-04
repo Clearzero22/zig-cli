@@ -21,6 +21,15 @@ pub fn main() !void {
     // Demonstrate RGB color printing
     try cli_color.printRgbColor("This is text with custom RGB color (255, 165, 0)\n", 255, 165, 0, .{});
     try cli_color.printRgbColor("Another RGB color (128, 0, 128) with number {d}\n", 128, 0, 128, .{123});
+
+    // Add 10 different RGB test cases
+    var i: u8 = 0;
+    while (i < 10) : (i += 1) {
+        const r = i * 25;
+        const g = 255 - (i * 25);
+        const b = i * 10;
+        try cli_color.printRgbColor("RGB Test {d}: ({d}, {d}, {d})\n", r, g, b, .{i, r, g, b});
+    }
 }
 
 test "simple test" {
