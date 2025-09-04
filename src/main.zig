@@ -41,7 +41,7 @@ pub fn main() !void {
     var j: usize = 0;
     while (j <= 100) : (j += 1) {
         try pb1.update(j);
-        std.time.sleep(1000000 / 20); // Sleep 50ms
+        std.time.sleep(1000000 / 5); // Sleep 200ms
     }
     try pb1.finish();
 
@@ -59,7 +59,7 @@ pub fn main() !void {
     j = 0;
     while (j <= 50) : (j += 1) {
         try pb2.update(j);
-        std.time.sleep(1000000 / 10); // Sleep 100ms
+        std.time.sleep(1000000000 / 2); // Sleep 500ms
     }
     try pb2.finish();
 
@@ -69,7 +69,7 @@ pub fn main() !void {
     j = 0;
     while (j <= 100) : (j += 5) {
         try pb3.increment(5);
-        std.time.sleep(1000000 / 4); // Sleep 250ms
+        std.time.sleep(100000000); // Sleep 1s
     }
     try pb3.finish();
 
@@ -91,8 +91,8 @@ pub fn main() !void {
         const to_download = @min(chunk_size, file_size - downloaded);
         downloaded += to_download;
         try pb4.update(downloaded);
-        // Simulate network delay - shorter delays for more realistic demo
-        std.time.sleep(1000000 / 20); // Sleep 50ms
+        // Simulate network delay - longer delays for better visualization
+        std.time.sleep(1000000 * 2); // Sleep 2s
     }
     try pb4.finish();
 }
